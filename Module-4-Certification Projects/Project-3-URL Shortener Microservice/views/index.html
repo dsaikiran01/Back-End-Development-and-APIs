@@ -1,4 +1,195 @@
 <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL Shortener Microservice | freeCodeCamp.org</title>
+  <link rel="icon" type="image/png" href="https://cdn.freecodecamp.org/universal/favicons/favicon-16x16.png" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      color: #222;
+      background-color: #f4f4f4;
+      text-align: center;
+      margin: 20px;
+    }
+
+    main {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 30px;
+    }
+
+    fieldset {
+      padding: 10px;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      max-width: 400px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+      text-align: center;
+      margin: 10px;
+    }
+
+    input[type="submit"] {
+      padding: 10px 15px;
+      margin: 5px;
+      background: #2574A9;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+
+    input[type="submit"]:hover {
+      background: #1b5b89;
+    }
+
+    .short-url-container {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .short-url-container ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .short-url-container li {
+      padding: 5px 0;
+    }
+
+    .short-url-container a {
+      color: #2574A9;
+      text-decoration: none;
+    }
+
+    .short-url-container a:hover {
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>URL Shortener Microservice</h1>
+  <main>
+    <section>
+      <form id="urlForm">
+        <fieldset>
+          <legend>URL Shortener</legend>
+          <label for="url_input">Enter a URL:</label>
+          <input id="url_input" type="text" name="url" placeholder="https://www.freecodecamp.org/" required>
+          <input type="submit" value="Shorten URL">
+        </fieldset>
+      </form>
+    </section>
+
+    <section class="short-url-container">
+      <h2>Available Short URLs</h2>
+      <ul id="shortUrlList"></ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>By <a href="#">DSK</a></p>
+  </footer>
+
+  <script>
+    async function fetchShortUrls() {
+      try {
+        const response = await fetch("/api/allurls");
+        const data = await response.json();
+
+        const urlList = document.getElementById("shortUrlList");
+
+        if (Object.keys(data).length === 0) {
+          urlList.innerHTML = "No data";
+        } else {
+          urlList.innerHTML = ""; // Clear existing list
+        }
+
+
+        Object.entries(data).forEach(([id, url]) => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `<a href="/api/shorturl/${id}" target="_blank">${window.location.origin}/api/shorturl/${id}</a> → <a href="${url}" target="_blank">${url}</a>`;
+          urlList.appendChild(listItem);
+        });
+      } catch (error) {
+        console.error("Error fetching short URLs:", error);
+      }
+    }
+
+    document.getElementById("urlForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const urlInput = document.getElementById("url_input").value.trim();
+      if (!urlInput) {
+        alert("Please enter a valid URL.");
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/shorturl", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `url=${encodeURIComponent(urlInput)}`
+        });
+
+        const data = await response.json();
+
+        if (data.error) {
+          alert("Error: " + data.error);
+        } else {
+          fetchShortUrls(); // Refresh the list after successful submission
+          alert(`Shortened URL: ${window.location.origin}/api/shorturl/${data.short_url}`);
+        }
+      } catch (error) {
+        alert("Error creating short URL. Please try again.");
+      }
+    });
+
+    window.onload = fetchShortUrls; // Load URLs on page load
+  </script>
+
+</body>
+
+</html>
+
+
+
+
+
+<!-- Project Default Code -->
+<!-- <!DOCTYPE html>
 
 <html>
   <head>
@@ -29,4 +220,4 @@
       <p>By <a href="https://www.freecodecamp.org/">freeCodeCamp</a></p>
     </footer>
   </body>
-</html>
+</html> -->

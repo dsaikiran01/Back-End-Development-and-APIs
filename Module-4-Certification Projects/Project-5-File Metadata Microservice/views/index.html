@@ -1,4 +1,165 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>File Metadata</title>
+    <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png" type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="/public/style.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            color: #222;
+            background-color: #ECF0F1;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .view {
+            position: relative;
+            margin: auto;
+            margin-top: 30px;
+            border: 1px solid #aaa;
+            padding: 20px;
+            width: 60%;
+            min-width: 400px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        /* input[type="file"] {
+            display: none;
+        } */
+
+        /* label { */
+        input[type='file'] {
+            display: inline-block;
+            padding: 10px 15px;
+            background: #2574A9;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        label:hover {
+            background: #1b5b89;
+        }
+
+        input[type="submit"] {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #219150;
+        }
+
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: left;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>API Project: File Metadata Microservice</h1>
+
+        <p>Please Upload a File...</p>
+
+        <div class="view">
+            <h3 id="output"></h3>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <input id="fileInput" type="file" name="upfile">
+                <!-- <label for="fileInput">Choose a File</label> -->
+                <input type="submit" value="Upload">
+            </form>
+        </div>
+
+        <div class="response-box" id="responseBox">
+            <h3>File Details:</h3>
+            <p><strong>Name:</strong> <span id="fileName"></span></p>
+            <p><strong>Size:</strong> <span id="fileSize"></span> bytes</p>
+            <p><strong>Type:</strong> <span id="fileType"></span></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>by <a href="#">DSK</a></p>
+    </div>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById("fileInput");
+            if (!fileInput.files.length) {
+                alert("Please select a file before uploading.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("upfile", fileInput.files[0]);
+
+            try {
+                const response = await fetch("/api/fileanalyse", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                document.getElementById("fileName").innerText = data.name;
+                document.getElementById("fileSize").innerText = data.size;
+                document.getElementById("fileType").innerText = data.type || "Unknown";
+
+                document.getElementById("responseBox").style.display = "block";
+            } catch (error) {
+                alert("Error uploading file. Please try again.");
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+
+<!-- Project Default Code -->
+<!-- <!DOCTYPE html>
 
 <html>
    <head>
@@ -31,4 +192,4 @@
         </p>
       </div>
    </body>
-</html>
+</html> -->

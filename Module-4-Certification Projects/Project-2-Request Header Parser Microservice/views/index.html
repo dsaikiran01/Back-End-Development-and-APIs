@@ -1,4 +1,147 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Request Header Parser</title>
+    <link rel="shortcut icon" href="https://cdn.hyperdev.com/us-east-1%3A52a203ff-088b-420f-81be-45bf559d01b1%2Ffavicon.ico" type="image/x-icon"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2574A9;
+            color: white;
+            text-align: left;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+
+        a {
+            color: #2574A9;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Request Header Parser Microservice</h1>
+
+        <h2>Example Usage:</h2>
+        <h3>
+            <a href="/api/whoami" id="apiLink">[base url]/api/whoami</a>
+        </h3>
+
+        <div class="response-box" id="responseBox">
+            <h3>Your Request Header Info:</h3>
+            <table>
+                <tr><th>Field</th><th>Value</th></tr>
+                <tr><td><strong>IP Address</strong></td><td id="ipAddress"></td></tr>
+                <tr><td><strong>Language</strong></td><td id="language"></td></tr>
+                <tr><td><strong>Software</strong></td><td id="software"></td></tr>
+            </table>
+        </div>
+
+        <h2>Example Output:</h2>
+        <p>
+          <code>{"ipaddress":"::ffff:159.20.14.100","language":"en-US,en;q=0.5",<br>"software":"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"}</code>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>by <a href="#">DSK</a></p>
+    </div>
+
+    <script>
+        async function fetchHeaderData() {
+          console.log(window.location.href);
+            try {
+                const response = await fetch("/api/whoami");
+                const data = await response.json();
+
+                document.getElementById("ipAddress").innerText = data.ipaddress;
+                document.getElementById("language").innerText = data.language;
+                document.getElementById("software").innerText = data.software;
+                document.getElementById("responseBox").style.display = "block";
+
+                history.pushState({}, "", "/api/whoami");
+            } catch (error) {
+                alert("Error fetching data. Please try again.");
+            }
+        }
+
+        function handleAPILink(event) {
+            event.preventDefault();
+            fetchHeaderData();
+        }
+
+        document.getElementById("apiLink").addEventListener("click", handleAPILink);
+
+        window.addEventListener("popstate", () => {
+            if (window.location.pathname === "/api/whoami") {
+                fetchHeaderData();
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.location.pathname === "/api/whoami") {
+                fetchHeaderData();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+
+
+<!-- Project Default Code -->
+<!-- <!DOCTYPE html>
 
 <html>
 
@@ -31,4 +174,4 @@
    </body>
 
 
-</html>
+</html> -->

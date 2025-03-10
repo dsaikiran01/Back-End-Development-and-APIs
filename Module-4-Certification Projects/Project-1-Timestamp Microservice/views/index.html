@@ -1,32 +1,137 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Hello HTML</title>
+    <link rel="stylesheet" href="/public/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
 
-<html>
-   <head>
-      <title>Timestamp Microservice | freeCodeCamp.org</title>
-      <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png" type="image/x-icon"/>
-      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
-      <link href="style.css" rel="stylesheet" type="text/css">
-   </head>
+        h1 {
+            color: #333;
+        }
 
-   <body>
-    <h1>Timestamp Microservice</h1>
-    <hr />
-    <div class="container">
-      <h2>Example Usage:</h2>
-      <ul>
-        <li><a href="api/2015-12-25">[project url]/api/2015-12-25</a></li>
-        <li><a href="api/1451001600000">[project url]/api/1451001600000</a></li>
-      </ul>
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+        }
 
-      <h2>Example Output:</h2>
-      <p>
-        <code>{"unix":1451001600000, "utc":"Fri, 25 Dec 2015 00:00:00 GMT"}</code>
-      </p>
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .response-box h2 {
+            margin: 0;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hello, HTML.</h1>
+
+    <form id="nameForm">
+        <label>First Name:</label>
+        <input type="text" name="first" id="firstName" value="John">
+        
+        <label>Last Name:</label>
+        <input type="text" name="last" id="lastName" value="Doe">
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    <div class="response-box" id="responseBox">
+        <h2 id="responseText"></h2>
     </div>
-    <div class="footer">
-      <p>
-        By <a href="https://www.freecodecamp.org/">freeCodeCamp.org</a>
-      </p>
-    </div>
-  </body>
+
+    <script>
+        document.getElementById("nameForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+
+            const response = await fetch("/name", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `first=${encodeURIComponent(firstName)}&last=${encodeURIComponent(lastName)}`
+            });
+
+            const data = await response.json();
+            
+            document.getElementById("responseText").innerText = `Hello, ${data.name}!`;
+            document.getElementById("responseBox").style.display = "block";
+        });
+    </script>
+
+</body>
 </html>
+
+
+<!-- Challenge Default Code -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>Hello HTML</title>
+		<link rel="stylesheet" href="/public/style.css">
+	</head>
+	<body>
+		<h1>Hello, HTML.</h1>
+		<p>Do not use until Challenge #12</p>
+     <form action="/name" method="post">
+      <label>First Name :</label>
+      <input type="text" name="first" value="John"><br>
+      <label>Last Name :</label>
+      <input type="text" name="last" value="Doe"><br><br>
+      <input type="submit" value="Submit">
+    </form> 
+	</body>
+
+</html> -->

@@ -48,6 +48,13 @@ const User = mongoose.model("User", userSchema);
 User.createCollection();
 console.log("Collection created!");
 
+// added code for UI update
+
+app.get('/api/all', async (req, res) => {
+  const users = await User.find({});
+  res.send(users);
+})
+
 // from test-4
 // get to /api/users to get all users
 // return arr of objs => [{username, _id}, ...]

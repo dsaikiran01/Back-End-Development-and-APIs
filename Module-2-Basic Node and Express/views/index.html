@@ -1,5 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Hello HTML</title>
+    <link rel="stylesheet" href="/public/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 40px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="text"] {
+            padding: 8px;
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        input[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .response-box h2 {
+            margin: 0;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Hello, HTML.</h1>
+
+    <form id="nameForm">
+        <label>First Name:</label>
+        <input type="text" name="first" id="firstName" value="John">
+        
+        <label>Last Name:</label>
+        <input type="text" name="last" id="lastName" value="Doe">
+        
+        <input type="submit" value="Submit">
+    </form>
+
+    <div class="response-box" id="responseBox">
+        <h2 id="responseText"></h2>
+    </div>
+
+    <script>
+        document.getElementById("nameForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const firstName = document.getElementById("firstName").value;
+            const lastName = document.getElementById("lastName").value;
+
+            const response = await fetch("/name", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `first=${encodeURIComponent(firstName)}&last=${encodeURIComponent(lastName)}`
+            });
+
+            const data = await response.json();
+            
+            document.getElementById("responseText").innerText = `Hello, ${data.name}!`;
+            document.getElementById("responseBox").style.display = "block";
+        });
+    </script>
+
+</body>
+</html>
+
+
+<!-- Challenge Default Code -->
+<!-- <!DOCTYPE html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,4 +134,4 @@
     </form> 
 	</body>
 
-</html>
+</html> -->

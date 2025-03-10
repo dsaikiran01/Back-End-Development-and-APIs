@@ -1,4 +1,239 @@
 <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exercise Tracker | freeCodeCamp</title>
+  <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon.ico" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 25px;
+      color: #222;
+      background-color: #f5f5f5;
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form {
+      margin: 15px 0;
+      padding: 15px;
+      background-color: #87D37C;
+      border-radius: 5px;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid lightgrey;
+      border-radius: 3px;
+      font-size: 16px;
+    }
+
+    input[type="submit"] {
+      background-color: #2574A9;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #1b5b89;
+    }
+
+    .logs-section {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .logs-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .logs-section li {
+      padding: 5px 0;
+    }
+
+    .logs-section a {
+      color: #2574A9;
+      text-decoration: none;
+    }
+
+    .logs-section a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Exercise Tracker</h1>
+
+    <!-- Create User Form -->
+    <form id="createUserForm">
+      <h2>Create a New User</h2>
+      <p><code>POST /api/users</code></p>
+      <input id="uname" type="text" name="username" placeholder="Enter username" required>
+      <input type="submit" value="Create User">
+    </form>
+
+    <!-- Add Exercise Form -->
+    <form id="exerciseForm">
+      <h2>Add Exercise</h2>
+      <p><code>POST /api/users/:_id/exercises</code></p>
+      <input id="uid" type="text" name="_id" placeholder="User ID (auto-filled)" required>
+      <input id="desc" type="text" name="description" placeholder="Exercise description*" required>
+      <input id="dur" type="number" name="duration" placeholder="Duration* (mins)" required>
+      <input id="date" type="date" name="date">
+      <input type="submit" value="Add Exercise">
+    </form>
+
+    <!-- Fetch Logs Section -->
+    <div class="logs-section">
+      <h2>Get User Logs</h2>
+      <p><code>GET /api/users/:_id/logs?[from][&to][&limit]</code></p>
+      <input id="log_uid" type="text" placeholder="User ID" required>
+      <input id="log_from" type="date" placeholder="From Date">
+      <input id="log_to" type="date" placeholder="To Date">
+      <input id="log_limit" type="number" placeholder="Limit (optional)">
+      <button onclick="fetchLogs()">Get Logs</button>
+      <ul id="logResults"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Create a new user
+    document.getElementById("createUserForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+      const username = document.getElementById("uname").value.trim();
+
+      try {
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `username=${encodeURIComponent(username)}`
+        });
+
+        const data = await response.json();
+
+        alert(`User Created! ID: ${data._id}`);
+        document.getElementById("uid").value = data._id; // Auto-fill user ID for exercises
+      } catch (error) {
+        alert("Error creating user. Try again.");
+      }
+    });
+
+    // Submit an exercise
+    document.getElementById("exerciseForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const userId = document.getElementById("uid").value.trim();
+      const description = document.getElementById("desc").value.trim();
+      const duration = document.getElementById("dur").value.trim();
+      const date = document.getElementById("date").value.trim();
+
+      if (!userId) {
+        alert("Please enter a User ID.");
+        return;
+      }
+
+      const formData = new URLSearchParams();
+      formData.append("description", description);
+      formData.append("duration", duration);
+      if (date) formData.append("date", date);
+
+      try {
+        const response = await fetch(`/api/users/${userId}/exercises`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: formData
+        });
+
+        const data = await response.json();
+        alert(`Exercise Added for ${data.username}!`);
+      } catch (error) {
+        alert("Error adding exercise. Try again.");
+      }
+    });
+
+    // Fetch user logs
+    async function fetchLogs() {
+      const userId = document.getElementById("log_uid").value.trim();
+      const from = document.getElementById("log_from").value;
+      const to = document.getElementById("log_to").value;
+      const limit = document.getElementById("log_limit").value;
+
+      if (!userId) {
+        alert("Please enter a User ID.");
+        return;
+      }
+
+      let queryParams = [];
+      if (from) queryParams.push(`from=${from}`);
+      if (to) queryParams.push(`to=${to}`);
+      if (limit) queryParams.push(`limit=${limit}`);
+
+      const queryString = queryParams.length ? `?${queryParams.join("&")}` : "";
+      const apiUrl = `/api/users/${userId}/logs${queryString}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        const logList = document.getElementById("logResults");
+        logList.innerHTML = ""; // Clear old results
+
+        if (data.log) {
+          data.log.forEach(entry => {
+            const li = document.createElement("li");
+            li.innerHTML = `<strong>${entry.date}</strong>: ${entry.description} (${entry.duration} mins)`;
+            logList.appendChild(li);
+          });
+        } else {
+          logList.innerHTML = "<li>No logs found.</li>";
+        }
+      } catch (error) {
+        alert("Error fetching logs.");
+      }
+    }
+  </script>
+
+</body>
+
+</html>
+
+
+
+
+
+<!-- Project Default Code -->
+<!-- <!DOCTYPE html>
 <html>
   <head>
     <title>Exercise Tracker | freeCodeCamp</title>
@@ -43,4 +278,4 @@
       });
     </script>
   </body>
-</html>
+</html> -->
